@@ -14,10 +14,15 @@ KERN_USER_H ?= $(wildcard common_kern_user.h)
 
 EXTRA_DEPS += $(COMMON_DIR)/xdp_stats_kern.h $(COMMON_DIR)/xdp_stats_kern_user.h
 
-BPF_CFLAGS ?= -I$(LIBBPF_DIR)/build/usr/include/ -I../headers/
+BPF_CFLAGS ?= -I$(LIBBPF_DIR)/build/usr/include/ -I./headers/
+
+CFLAGS := -g -Wall
+CFLAGS += -I$(LIBBPF_DIR)/build/usr/include/  -I./headers
+LDFLAGS ?= -L$(LIBBPF_DIR) -I./libbpf/include/
+LIBS = -l:libbpf.a -lelf $(USER_LIBS)
 
 
-all: llvm-check $(LIBBPF_DIR) $(XDP_OBJ)
+all: llvm-check $(LIBBPF_DIR) xdp_loader xdp_stats $(XDP_OBJ)
 
 .PHONY: clean $(CLANG) $(LLC)
 
@@ -53,7 +58,17 @@ $(XDP_OBJ): %.o: %.c $(OBJECT_LIBBPF)
 	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
+xdp_loader: $(OBJECT_LIBBPF)
+	$(CC) -Wall $(CFLAGS) $(LDFLAGS) -o $@ xdp_loader.c ./common/common_libbpf.c ./common/common_params.c ./common/common_user_bpf_xdp.c \
+	 $< $(LIBS)
+
+xdp_stats: $(OBJECT_LIBBPF)
+	$(CC) -Wall $(CFLAGS) $(LDFLAGS) -o $@ xdp_stats.c ./common/common_libbpf.c ./common/common_params.c ./common/common_user_bpf_xdp.c \
+	 $< $(LIBS)
+
 clean:
 	rm -rf $(LIBBPF_DIR)/build
 	$(MAKE) -C $(LIBBPF_DIR) clean
 	rm -f $(XDP_OBJ)
+	rm -f xdp_loader.o xdp_stats.o ./common/common_libbpf.o ./common/common_params.o ./common/common_user_bpf_xdp.o
+	rm -f xdp_stats xdp_loader

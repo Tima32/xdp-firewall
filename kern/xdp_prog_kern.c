@@ -36,7 +36,7 @@ static __always_inline int parse_ethhdr(struct hdr_cursor *nh,
 	/* Byte-count bounds check; check if current pointer + size of header
 	 * is after data_end.
 	 */
-	if (nh->pos + 1 > data_end)
+	if (nh->pos + sizeof(struct ethhdr) > data_end)
 		return -1;
 
 	nh->pos += hdrsize;
