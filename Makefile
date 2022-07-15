@@ -1,6 +1,7 @@
 LLC ?= llc
 CLANG ?= clang
 CC ?= gcc
+GPP ?= g++
 
 LIBBPF_DIR := ./libbpf/src/
 OBJECT_LIBBPF = $(LIBBPF_DIR)/libbpf.a
@@ -9,6 +10,8 @@ XDP_TARGETS  := kern/xdp_prog_kern
 XDP_C = ${XDP_TARGETS:=.c}
 XDP_OBJ = ${XDP_C:.c=.o}
 XDP_LL = ${XDP_C:.c=.ll}
+
+FIREWALL_TARGET=xdp-firewall
 
 # BPF-prog kern and userspace shares struct via header file:
 KERN_USER_H ?= $(wildcard common_kern_user.h)
@@ -22,8 +25,7 @@ CFLAGS += -I$(LIBBPF_DIR)/build/usr/include/  -I./headers
 LDFLAGS ?= -L$(LIBBPF_DIR) -I./libbpf/include/
 LIBS = -l:libbpf.a -lelf $(USER_LIBS)
 
-
-all: llvm-check $(LIBBPF_DIR) xdp_loader xdp_stats $(XDP_OBJ)
+all: llvm-check $(LIBBPF_DIR) xdp_loader xdp_stats $(XDP_OBJ) $(FIREWALL_TARGET)
 
 .PHONY: clean $(CLANG) $(LLC)
 
@@ -67,9 +69,21 @@ xdp_stats: $(OBJECT_LIBBPF)
 	$(CC) -Wall $(CFLAGS) $(LDFLAGS) -o $@ xdp_stats.c ./common/common_libbpf.c ./common/common_params.c ./common/common_user_bpf_xdp.c \
 	 $< $(LIBS)
 
+# Firewall
+FIREWALL_SOURCES=firewall/firewall-main.cpp
+
+FIREWALL_CPPFLAGS=-I./ArgumentParserLib
+FIREWALL_OBJECTS=$(patsubst %.cpp,%.o,$(FIREWALL_SOURCES))
+
+$(FIREWALL_TARGET): $(FIREWALL_OBJECTS)
+	$(GPP) $^ -o $@ -pthread -lrt
+
+# -- Firewall --
+
 clean:
 	rm -rf $(LIBBPF_DIR)/build
 	$(MAKE) -C $(LIBBPF_DIR) clean
 	rm -f $(XDP_OBJ) $(XDP_LL)
 	rm -f xdp_loader.o xdp_stats.o ./common/common_libbpf.o ./common/common_params.o ./common/common_user_bpf_xdp.o
 	rm -f xdp_stats xdp_loader
+	rm -f $(FIREWALL_TARGET) $(FIREWALL_OBJECTS)
