@@ -75,8 +75,11 @@ FIREWALL_SOURCES=firewall/firewall-main.cpp
 FIREWALL_CPPFLAGS=-I./ArgumentParserLib
 FIREWALL_OBJECTS=$(patsubst %.cpp,%.o,$(FIREWALL_SOURCES))
 
+%.o: %.cpp
+	$(CC) $(FIREWALL_CPPFLAGS) -c $^ -o $@
+
 $(FIREWALL_TARGET): $(FIREWALL_OBJECTS)
-	$(GPP) $^ -o $@ -pthread -lrt
+	$(GPP) $(FIREWALL_CPPFLAGS) $^ -o $@ -pthread -lrt
 
 # -- Firewall --
 
