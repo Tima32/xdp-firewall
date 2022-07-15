@@ -4,6 +4,7 @@
 #include <linux/in.h>
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
+#include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <linux/icmpv6.h>
 #include <bpf/bpf_helpers.h>
@@ -42,29 +43,36 @@ static __always_inline int parse_ethhdr(struct hdr_cursor *nh,
 	nh->pos += hdrsize;
 	*ethhdr = eth;
 
-	return eth->h_proto; /* network-byte-order */
+	return bpf_htons(eth->h_proto); /* network-byte-order */
 }
 
-/* Assignment 2: Implement and use this */
-/*static __always_inline int parse_ip6hdr(struct hdr_cursor *nh,
+static __always_inline int parse_ip(struct hdr_cursor *nh,
 					void *data_end,
-					struct ipv6hdr **ip6hdr)
+					struct iphdr **hdr)
 {
-}*/
+	struct iphdr *iph = nh->pos;
+	int hdrsize = sizeof(*iph);
 
-/* Assignment 3: Implement and use this */
-/*static __always_inline int parse_icmp6hdr(struct hdr_cursor *nh,
-					  void *data_end,
-					  struct icmp6hdr **icmp6hdr)
-{
-}*/
+	/* Byte-count bounds check; check if current pointer + size of header
+	 * is after data_end.
+	 */
+	if (nh->pos + sizeof(struct iphdr) > data_end)
+		return -1;
+
+	nh->pos += hdrsize;
+	*hdr = iph;
+
+	return iph->protocol; /* network-byte-order */
+}
 
 SEC("xdp_packet_parser")
 int  xdp_parser_func(struct xdp_md *ctx)
 {
 	void *data_end = (void *)(long)ctx->data_end;
 	void *data = (void *)(long)ctx->data;
+
 	struct ethhdr *eth;
+	struct iphdr *iph;
 
 	/* Default action XDP_PASS, imply everything we couldn't parse, or that
 	 * we don't want to deal with, we just pass up the stack and let the
@@ -75,6 +83,7 @@ int  xdp_parser_func(struct xdp_md *ctx)
         /* These keep track of the next header type and iterator pointer */
 	struct hdr_cursor nh;
 	int nh_type;
+	int ip_proto;
 
 	/* Start next header cursor position at data start */
 	nh.pos = data;
@@ -84,12 +93,18 @@ int  xdp_parser_func(struct xdp_md *ctx)
 	 * header type in the packet correct?), and bounds checking.
 	 */
 	nh_type = parse_ethhdr(&nh, data_end, &eth);
-	if (nh_type != bpf_htons(ETH_P_IPV6))
+	if (nh_type != ETH_P_IP)
 		goto out;
 
-	/* Assignment additions go below here */
+	ip_proto = parse_ip(&nh, data_end, &iph);
+	// if (ip_proto == IPPROTO_TCP)
+	// 	action = XDP_DROP;
+	// if (ip_proto == IPPROTO_UDP)
+	// 	action = XDP_DROP;
+	// if (ip_proto == IPPROTO_ICMP)
+	// 	action = XDP_DROP;
+	
 
-	action = XDP_DROP;
 out:
 	return xdp_stats_record_action(ctx, action); /* read via xdp_stats */
 }

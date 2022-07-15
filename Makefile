@@ -8,6 +8,7 @@ OBJECT_LIBBPF = $(LIBBPF_DIR)/libbpf.a
 XDP_TARGETS  := kern/xdp_prog_kern
 XDP_C = ${XDP_TARGETS:=.c}
 XDP_OBJ = ${XDP_C:.c=.o}
+XDP_LL = ${XDP_C:.c=.ll}
 
 # BPF-prog kern and userspace shares struct via header file:
 KERN_USER_H ?= $(wildcard common_kern_user.h)
@@ -69,6 +70,6 @@ xdp_stats: $(OBJECT_LIBBPF)
 clean:
 	rm -rf $(LIBBPF_DIR)/build
 	$(MAKE) -C $(LIBBPF_DIR) clean
-	rm -f $(XDP_OBJ)
+	rm -f $(XDP_OBJ) $(XDP_LL)
 	rm -f xdp_loader.o xdp_stats.o ./common/common_libbpf.o ./common/common_params.o ./common/common_user_bpf_xdp.o
 	rm -f xdp_stats xdp_loader
