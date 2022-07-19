@@ -90,6 +90,12 @@ bool Filters::ParseArgs(int argc, const char** argv)
 	try
 	{
 		// -b
+		for (size_t pos = 0; pos < ap.size(); pos++)
+		{
+			pos = ap.find("-b", pos);
+			if (pos == -1) break;
+			AddBlock(pos, ap);
+		}
 
 		// --block
 		for (size_t pos = 0; pos < ap.size(); pos++)
@@ -98,6 +104,7 @@ bool Filters::ParseArgs(int argc, const char** argv)
 			if (pos == -1) break;
 			AddBlock(pos, ap);
 		}
+		// --block
 
 		// -f
 		for (size_t pos = 0; pos < ap.size(); pos++)
