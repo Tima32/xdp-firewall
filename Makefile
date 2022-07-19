@@ -6,7 +6,7 @@ GPP ?= g++
 LIBBPF_DIR := ./libbpf/src/
 OBJECT_LIBBPF = $(LIBBPF_DIR)/libbpf.a
 
-XDP_TARGETS  := kern/xdp_prog_kern
+XDP_TARGETS  := kern/xdp_prog_kern_template
 XDP_C = ${XDP_TARGETS:=.c}
 XDP_OBJ = ${XDP_C:.c=.o}
 XDP_LL = ${XDP_C:.c=.ll}
