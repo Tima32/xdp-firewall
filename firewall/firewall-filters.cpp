@@ -35,6 +35,7 @@ static bool AddBlock(const size_t pos, const ArgumentParser& ap)
 			return false;
 		}
 
+		cout << "<Filters::AddBlock>Info: Add proto " << (uint16_t)proto_num << endl;
 		Filters::block_proto.push_back(proto_num);
 	}
 	catch (const std::exception& e)
@@ -65,10 +66,8 @@ static bool AddFilter(const size_t pos, const ArgumentParser& ap)
 }
 
 
-bool Filters::ParseArgs(int argc, const char** argv)
+bool Filters::ParseArgs(ArgumentParser& ap)
 {
-    ArgumentParser ap(argc, argv);
-
 	try
 	{
 		// -b

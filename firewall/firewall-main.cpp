@@ -13,12 +13,6 @@ using namespace std;
 
 static string dev;
 
-enum class ParseArgsStatus
-{
-	OK,
-	ERR,
-	EXIT,
-};
 static void PrintHelp()
 {
 	static constexpr auto str =
@@ -31,60 +25,7 @@ static void PrintHelp()
 
 	cout << str << endl;
 }
-static ParseArgsStatus ParseArgs(int argc, const char **argv)
-{
-	ArgumentParser ap(argc, argv);
 
-	// Help
-	auto help_pos = ap.find("--help");
-	if (help_pos != ArgumentParser::not_found || argc == 1)
-	{
-		PrintHelp();
-		return ParseArgsStatus::EXIT;
-	}	
-
-	// Device
-	try
-	{
-		dev = ap.get<string>("--dev", "");
-		dev = ap.get<string>("-d", dev);
-		if (dev.size() == 0)
-		{
-			cout << "Err: You must specify the name of the network device." << endl;
-			return ParseArgsStatus::ERR;
-		}
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << e.what() << '\n';
-		return ParseArgsStatus::ERR;
-	}
-
-	// Start
-	try
-	{
-		dev = ap.get<string>("--start", "");
-		dev = ap.get<string>("-s", dev);
-		if (dev.size() == 0)
-		{
-			cout << "Err: You must specify the name of the network device." << endl;
-			return ParseArgsStatus::ERR;
-		}
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << e.what() << '\n';
-		return ParseArgsStatus::ERR;
-	}
-
-	// Filters
-	if (!Filters::ParseArgs(argc, argv))
-	{
-		return ParseArgsStatus::ERR;
-	}
-
-	return ParseArgsStatus::OK;
-}
 static bool GetDevice(ArgumentParser& ap)
 {
 	try
@@ -201,6 +142,14 @@ void CommandStop(ArgumentParser& ap)
 		cout << "<CommandStart>Error: Failed to start bootloader." << endl;
 	}
 }
+void CommandAdd(ArgumentParser& ap)
+{
+	if (!GetDevice(ap))
+		exit(-1);
+
+	Filters::ParseArgs(ap);
+	Filters::InitFiltersArray();
+}
 
 int main(int argc, const char **argv)
 {	
@@ -228,6 +177,7 @@ int main(int argc, const char **argv)
 
 	if (ap[1] == "add")
 	{
+		CommandAdd(ap);
 		return 0;
 	}
 

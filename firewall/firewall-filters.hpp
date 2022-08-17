@@ -16,7 +16,7 @@ public:
 	    uint16_t port_dst;
     };
 
-    static bool ParseArgs(int argc, const char** argv);
+    static bool ParseArgs(ArgumentParser& ap);
     static void InitFiltersArray();
 
     static std::vector<uint8_t> block_proto;
