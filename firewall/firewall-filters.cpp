@@ -6,10 +6,11 @@
 
 using namespace std;
 
+///sys/fs/bpf/wlp5s0/xdp_stats_map
 
-static uint32_t ParseProto(const string& proto)
+static uint8_t ParseProto(const string& proto)
 {
-	uint32_t proto_num{0};
+	uint8_t proto_num{0};
 
 	if (proto == "icmp")
 		proto_num = IPPROTO_ICMP;
@@ -21,25 +22,13 @@ static uint32_t ParseProto(const string& proto)
 	return proto_num;
 }
 
-static void PrintHelp()
-{
-	static constexpr auto str = 
-	"Usage: xdp-firewall [options]\n"
-	"	--block [protocol]\n"
-	"	--filter [protocol] [ip-src] [ip-dst] [port-src] [port-dst]\n"
-	"	--range [protocol] [ip-src-begin] [ip-src-end] [ip-dst-begin] [ip-dst-end]\n"
-	"		[port-src-begin] [port-src-end] [port-dst-begin] [port-dst-end]\n"
-	;
-
-	cout << str << endl;
-}
 static bool AddBlock(const size_t pos, const ArgumentParser& ap)
 {
 	try
 	{
 		auto& proto = ap.at(pos + 1);
 
-		uint32_t proto_num = ParseProto(proto);
+		uint8_t proto_num = ParseProto(proto);
 		if (proto_num == IPPROTO_IP)
 		{
 			cout << "Error: The protocol " << proto << " is not supported." << endl;
@@ -80,13 +69,6 @@ bool Filters::ParseArgs(int argc, const char** argv)
 {
     ArgumentParser ap(argc, argv);
 
-	auto help_pos = ap.find("--help");
-	if (help_pos != ArgumentParser::not_found || argc == 1)
-	{
-		PrintHelp();
-		return 0;
-	}
-
 	try
 	{
 		// -b
@@ -126,7 +108,27 @@ bool Filters::ParseArgs(int argc, const char** argv)
 		exit(-1);
 	}
 	
-	return 0;
+	return true;
+}
+void Filters::InitFiltersArray()
+{
+	filters.clear();
+
+	// Bclock
+	for (size_t i = 0; i < block_proto.size(); i++)
+	{
+		Filter f;
+		f.proto = block_proto[i];
+		f.ip_src = 0;
+		f.ip_dst = numeric_limits<uint32_t>::max();
+		f.port_src = 0;
+		f.port_dst = numeric_limits<uint16_t>::max();
+
+		filters.push_back(f);
+	}
 }
 
-std::vector<uint32_t> Filters::block_proto;
+
+std::vector<uint8_t> Filters::block_proto;
+
+std::vector<Filters::Filter> Filters::filters;

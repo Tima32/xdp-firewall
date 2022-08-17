@@ -12,11 +12,31 @@
 #include <../common/xdp_stats_kern_user.h>
 #endif
 
+#include <stdint.h>
+
 /* Keeps stats per (enum) xdp_action */
 struct bpf_map_def SEC("maps") xdp_stats_map = {
 	.type        = BPF_MAP_TYPE_PERCPU_ARRAY,
 	.key_size    = sizeof(__u32),
 	.value_size  = sizeof(struct datarec),
+	.max_entries = XDP_ACTION_MAX,
+};
+
+struct Filter
+{
+	uint8_t proto;
+
+	uint32_t ip_src;
+	uint32_t ip_dst;
+	
+	uint16_t port_src;
+	uint16_t port_dst;
+};
+/* Filter param */
+struct bpf_map_def SEC("maps") xdp_config_map = {
+	.type        = BPF_MAP_TYPE_ARRAY,
+	.key_size    = sizeof(__u32),
+	.value_size  = sizeof(struct Filter),
 	.max_entries = XDP_ACTION_MAX,
 };
 

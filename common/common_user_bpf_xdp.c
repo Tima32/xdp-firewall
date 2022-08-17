@@ -46,6 +46,7 @@ int xdp_link_attach(int ifindex, __u32 xdp_flags, int prog_fd)
 		case EEXIST:
 			fprintf(stderr, "Hint: XDP already loaded on device"
 				" use --force to swap/replace\n");
+			return EXIT_FAIL_XDP_LOADED;
 			break;
 		case EOPNOTSUPP:
 			fprintf(stderr, "Hint: Native-XDP not supported"

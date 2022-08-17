@@ -5,7 +5,7 @@
 class Filters
 {
 public:
-    struct Felter
+    struct Filter
     {
 	    uint8_t proto;
 
@@ -17,8 +17,11 @@ public:
     };
 
     static bool ParseArgs(int argc, const char** argv);
+    static void InitFiltersArray();
 
-    static std::vector<uint32_t> block_proto;
+    static std::vector<uint8_t> block_proto;
+
+    static std::vector<Filter> filters;
 
     Filters() = delete;
 };
