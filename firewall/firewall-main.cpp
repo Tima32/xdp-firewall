@@ -6,7 +6,6 @@
 #include <sys/wait.h>
 #include <string.h>
 #include "ArgumentParser.hpp"
-#include "firewall-filters.hpp"
 #include "common_defines.h"
 
 using namespace std;
@@ -26,7 +25,7 @@ static void PrintHelp()
 	cout << str << endl;
 }
 
-static bool GetDevice(ArgumentParser& ap)
+bool GetDevice(ArgumentParser& ap)
 {
 	try
 	{
@@ -122,7 +121,7 @@ static bool UnloadProgKern()
 	return true;
 }
 
-void CommandStart(ArgumentParser& ap)
+static void CommandStart(ArgumentParser& ap)
 {
 	if (!GetDevice(ap))
 		exit(-1);
@@ -132,7 +131,7 @@ void CommandStart(ArgumentParser& ap)
 		cout << "<CommandStart>Error: Failed to start bootloader." << endl;
 	}
 }
-void CommandStop(ArgumentParser& ap)
+static void CommandStop(ArgumentParser& ap)
 {
 	if (!GetDevice(ap))
 		exit(-1);
@@ -142,14 +141,7 @@ void CommandStop(ArgumentParser& ap)
 		cout << "<CommandStart>Error: Failed to start bootloader." << endl;
 	}
 }
-void CommandAdd(ArgumentParser& ap)
-{
-	if (!GetDevice(ap))
-		exit(-1);
-
-	Filters::ParseArgs(ap);
-	Filters::InitFiltersArray();
-}
+extern void CommandAdd(ArgumentParser& ap);
 
 int main(int argc, const char **argv)
 {	
