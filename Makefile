@@ -75,11 +75,11 @@ FIREWALL_SOURCES=firewall/firewall-main.cpp firewall/firewall-filters.cpp firewa
 FIREWALL_CPPFLAGS=-I./ArgumentParserLib -I./common
 FIREWALL_OBJECTS=$(patsubst %.cpp,%.o,$(FIREWALL_SOURCES))
 
-%.o: %.cpp
-	$(CC) $(FIREWALL_CPPFLAGS) -c $^ -o $@
+%.o: %.cpp $(OBJECT_LIBBPF)
+	$(CC) $(FIREWALL_CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $^ -o $@
 
-$(FIREWALL_TARGET): $(FIREWALL_OBJECTS)
-	$(GPP) $(FIREWALL_CPPFLAGS) $^ -o $@ -pthread -lrt
+$(FIREWALL_TARGET): $(FIREWALL_OBJECTS) 
+	$(GPP) $(FIREWALL_CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -o $@ -pthread -lrt $(LIBS)
 
 # -- Firewall --
 

@@ -37,7 +37,7 @@ struct bpf_map_def SEC("maps") xdp_config_map = {
 	.type        = BPF_MAP_TYPE_ARRAY,
 	.key_size    = sizeof(__u32),
 	.value_size  = sizeof(struct Filter),
-	.max_entries = XDP_ACTION_MAX,
+	.max_entries = 256,
 };
 
 static __always_inline
@@ -59,6 +59,28 @@ __u32 xdp_stats_record_action(struct xdp_md *ctx, __u32 action)
 	rec->rx_bytes += (ctx->data_end - ctx->data);
 
 	return action;
+}
+
+static __always_inline
+__u32 xdp_check_block_loop(size_t i, int ip_proto)
+{
+	struct Filter *filter = bpf_map_lookup_elem(&xdp_config_map, &i);
+	if (!filter)
+		return 1;
+	if (filter->proto == ip_proto)
+		return 1;
+	return 0;
+}
+static __always_inline
+__u32 xdp_check_block(int ip_proto)
+{
+	#pragma clang loop unroll(full)
+	for (size_t i = 0; i < 256; ++i)
+	{
+		if (xdp_check_block_loop(i, ip_proto))
+			return 1;
+	}
+	return 0; // XDP_PASS
 }
 
 #endif /* __XDP_STATS_KERN_H */
