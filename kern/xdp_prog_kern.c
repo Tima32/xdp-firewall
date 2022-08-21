@@ -99,8 +99,13 @@ int  xdp_parser_func(struct xdp_md *ctx)
 	ip_proto = parse_ip(&nh, data_end, &iph);
 	if (ip_proto == IPPROTO_IP)
 		action = XDP_ABORTED;
-	else if (xdp_check_block(ip_proto))
-		action = XDP_DROP;
+	if (ip_proto == IPPROTO_ICMP || ip_proto == IPPROTO_TCP || ip_proto == IPPROTO_UDP)
+	{
+		if (nh.pos + sizeof(struct iphdr) > data_end)
+			action = XDP_ABORTED;
+		else if (xdp_check_block(ip_proto, iph->saddr, iph->daddr))
+			action = XDP_DROP;
+	}
 	
 
 out:

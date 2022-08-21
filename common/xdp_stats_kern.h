@@ -26,11 +26,15 @@ struct Filter
 {
 	uint8_t proto;
 
-	uint32_t ip_src;
-	uint32_t ip_dst;
+	uint32_t ip_src_begin;
+    uint32_t ip_src_end;
+	uint32_t ip_dst_begin;
+    uint32_t ip_dst_end;
 	
-	uint16_t port_src;
-	uint16_t port_dst;
+	uint16_t port_src_begin;
+    uint16_t port_src_end;
+	uint16_t port_dst_begin;
+    uint16_t port_dst_end;
 };
 /* Filter param */
 struct bpf_map_def SEC("maps") xdp_config_map = {
@@ -62,22 +66,26 @@ __u32 xdp_stats_record_action(struct xdp_md *ctx, __u32 action)
 }
 
 static __always_inline
-__u32 xdp_check_block_loop(size_t i, int ip_proto)
+__u32 xdp_check_block_loop(size_t i, int ip_proto, __be32 saddr, __be32 daddr)
 {
 	struct Filter *filter = bpf_map_lookup_elem(&xdp_config_map, &i);
 	if (!filter)
 		return 1;
-	if (filter->proto == ip_proto)
-		return 1;
-	return 0;
+	if (filter->proto != ip_proto)
+		return 0;
+
+	if (filter->ip_src_begin > saddr)
+		return 0;
+
+	return 1;
 }
 static __always_inline
-__u32 xdp_check_block(int ip_proto)
+__u32 xdp_check_block(int ip_proto, uint32_t saddr, uint32_t daddr, uint16_t sp, uint16_t dp)
 {
 	#pragma clang loop unroll(full)
 	for (size_t i = 0; i < 256; ++i)
 	{
-		if (xdp_check_block_loop(i, ip_proto))
+		if (xdp_check_block_loop(i, ip_proto, saddr, daddr))
 			return 1;
 	}
 	return 0; // XDP_PASS

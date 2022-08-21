@@ -123,8 +123,13 @@ static bool UnloadProgKern()
 
 static void CommandStart(ArgumentParser& ap)
 {
-	if (!GetDevice(ap))
+	if (ap.size() < 3)
+	{
+		cout << "Error: The network device name was not specified." << endl;
 		exit(-1);
+	}
+
+	dev = ap[2];
 
 	if (!LoadProgKern())
 	{
@@ -133,8 +138,13 @@ static void CommandStart(ArgumentParser& ap)
 }
 static void CommandStop(ArgumentParser& ap)
 {
-	if (!GetDevice(ap))
+	if (ap.size() < 3)
+	{
+		cout << "Error: The network device name was not specified." << endl;
 		exit(-1);
+	}
+
+	dev = ap[2];
 	
 	if (!UnloadProgKern())
 	{
@@ -142,6 +152,7 @@ static void CommandStop(ArgumentParser& ap)
 	}
 }
 extern void CommandAdd(ArgumentParser& ap);
+extern void CommandClear(ArgumentParser& ap);
 
 int main(int argc, const char **argv)
 {	
@@ -180,6 +191,7 @@ int main(int argc, const char **argv)
 
 	if (ap[1] == "clear")
 	{
+		CommandClear(ap);
 		return 0;
 	}
 

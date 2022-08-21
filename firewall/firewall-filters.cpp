@@ -96,6 +96,12 @@ bool Filters::ParseArgs(ArgumentParser& ap)
 		}
 
 		// --filter
+		for (size_t pos = 0; pos < ap.size(); pos++)
+		{
+			pos = ap.find("-filter", pos);
+			if (pos == -1) break;
+			AddFilter(pos, ap);
+		}
 
 		// -r
 
@@ -118,10 +124,14 @@ void Filters::InitFiltersArray()
 	{
 		Filter f;
 		f.proto = block_proto[i];
-		f.ip_src = 0;
-		f.ip_dst = numeric_limits<uint32_t>::max();
-		f.port_src = 0;
-		f.port_dst = numeric_limits<uint16_t>::max();
+		f.ip_src_begin = 0;
+		f.ip_src_end = numeric_limits<uint32_t>::max();
+		f.ip_dst_begin = 0;
+		f.ip_dst_end = numeric_limits<uint32_t>::max();
+		f.port_src_begin = 0;
+		f.port_src_end = numeric_limits<uint16_t>::max();
+		f.port_dst_begin = 0;
+		f.port_dst_end = numeric_limits<uint16_t>::max();
 
 		filters.push_back(f);
 	}
