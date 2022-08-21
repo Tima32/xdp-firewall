@@ -66,18 +66,33 @@ __u32 xdp_stats_record_action(struct xdp_md *ctx, __u32 action)
 }
 
 static __always_inline
-__u32 xdp_check_block_loop(size_t i, int ip_proto, __be32 saddr, __be32 daddr)
+__u32 xdp_check_block_loop(size_t i, int ip_proto, uint32_t saddr, uint32_t daddr, uint16_t sp, uint16_t dp)
 {
 	struct Filter *filter = bpf_map_lookup_elem(&xdp_config_map, &i);
 	if (!filter)
 		return 1;
-	if (filter->proto != ip_proto)
+
+	if (filter->proto == 0)
 		return 0;
 
-	if (filter->ip_src_begin > saddr)
-		return 0;
+	uint8_t count = 0;
+	if (filter->proto == ip_proto || filter->proto == 0xFF)
+		count++;
 
-	return 1;
+	if (filter->ip_src_begin <= saddr && saddr <= filter->ip_src_end)
+		count++;
+	if (filter->ip_dst_begin <= daddr && daddr <= filter->ip_dst_end)
+		count++;
+
+	if (filter->port_src_begin <= sp && sp <= filter->port_src_end)
+		count++;
+	if (filter->port_dst_begin <= dp && dp <= filter->port_dst_end)
+		count++;
+	
+	if (count == 5)
+		return 1;
+
+	return 0;
 }
 static __always_inline
 __u32 xdp_check_block(int ip_proto, uint32_t saddr, uint32_t daddr, uint16_t sp, uint16_t dp)
@@ -85,7 +100,7 @@ __u32 xdp_check_block(int ip_proto, uint32_t saddr, uint32_t daddr, uint16_t sp,
 	#pragma clang loop unroll(full)
 	for (size_t i = 0; i < 256; ++i)
 	{
-		if (xdp_check_block_loop(i, ip_proto, saddr, daddr))
+		if (xdp_check_block_loop(i, ip_proto, saddr, daddr, sp, dp))
 			return 1;
 	}
 	return 0; // XDP_PASS

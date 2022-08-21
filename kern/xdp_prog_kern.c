@@ -5,6 +5,7 @@
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
 #include <linux/ip.h>
+#include <linux/udp.h>
 #include <linux/ipv6.h>
 #include <linux/icmpv6.h>
 #include <bpf/bpf_helpers.h>
@@ -73,6 +74,7 @@ int  xdp_parser_func(struct xdp_md *ctx)
 
 	struct ethhdr *eth;
 	struct iphdr *iph;
+	struct udphdr *udph;
 
 	/* Default action XDP_PASS, imply everything we couldn't parse, or that
 	 * we don't want to deal with, we just pass up the stack and let the
@@ -97,14 +99,26 @@ int  xdp_parser_func(struct xdp_md *ctx)
 		goto out;
 
 	ip_proto = parse_ip(&nh, data_end, &iph);
-	if (ip_proto == IPPROTO_IP)
-		action = XDP_ABORTED;
-	if (ip_proto == IPPROTO_ICMP || ip_proto == IPPROTO_TCP || ip_proto == IPPROTO_UDP)
+	if (ip_proto != IPPROTO_ICMP && ip_proto != IPPROTO_TCP && ip_proto != IPPROTO_UDP)
+		goto out;
+	
+	uint16_t port_src = 0;
+	uint16_t port_dst = 0;
+	if (ip_proto != IPPROTO_ICMP)
 	{
-		if (nh.pos + sizeof(struct iphdr) > data_end)
+		if (nh.pos + sizeof(struct udphdr) > data_end)
+		{
 			action = XDP_ABORTED;
-		else if (xdp_check_block(ip_proto, iph->saddr, iph->daddr))
-			action = XDP_DROP;
+			goto out;
+		}
+		udph = nh.pos;
+		port_src = udph->source;
+		port_dst = udph->dest;
+	}
+
+	if (xdp_check_block(ip_proto, iph->saddr, iph->daddr, port_src, port_dst))
+	{
+		action = XDP_DROP;
 	}
 	
 
