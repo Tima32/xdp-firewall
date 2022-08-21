@@ -15,12 +15,20 @@ static string dev;
 static void PrintHelp()
 {
 	static constexpr auto str =
-		"Usage: xdp-firewall [options]\n"
-		"	--dev / -d [dev name] The device to which the filter will be applied."
-		"	--block [protocol]\n"
-		"	--filter [protocol] [ip-src] [ip-dst] [port-src] [port-dst]\n"
-		"	--range [protocol] [ip-src-begin] [ip-src-end] [ip-dst-begin] [ip-dst-end]\n"
-		"		[port-src-begin] [port-src-end] [port-dst-begin] [port-dst-end]\n";
+		"Usage: xdp-firewall [command] ...\n"
+		"	start [device name] Enable filtering for the specified network device.\n"
+		"	stop  [device name] Disaable filtering for the specified network device.\n"
+		"	add   [device name] [command arguments add] Adds a new filter.\n"
+		"	clear [device name] Clears the list of arguments.\n"
+		"\n"
+		"Each of the arguments to the add command is optional, but there must be at least one.\n"
+		"Argument list for the add command:\n"
+		"	--proto [name] Set the protocol name. Supported ICMP, TCP, UDP.\n"
+		"	--ip_src [ip] Set the source ip.\n"
+		"	--ip_dst [ip] Set the destination ip.\n"
+		"	--port_src [port] Set the source port.\n"
+		"	--port_dst [port] Set the destination port.\n"
+		;
 
 	cout << str << endl;
 }
@@ -166,34 +174,32 @@ int main(int argc, const char **argv)
 		return 0;
 	}
 
-	if (ap[1] == "start")
+	else if (ap[1] == "start")
 	{
 		CommandStart(ap);
 		return 0;
 	}
 
-	if (ap[1] == "stop")
+	else if (ap[1] == "stop")
 	{
 		CommandStop(ap);
 		return 0;
 	}
 
-	if (ap[1] == "add")
+	else if (ap[1] == "add")
 	{
 		CommandAdd(ap);
 		return 0;
 	}
 
-	if (ap[1] == "del")
-	{
-		return 0;
-	}
-
-	if (ap[1] == "clear")
+	else if (ap[1] == "clear")
 	{
 		CommandClear(ap);
 		return 0;
 	}
+
+	else
+		cout << "Error: Unknown command " << ap[1] << "." << endl;
 
 	//Filters::InitFiltersArray();
 
