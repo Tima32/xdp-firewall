@@ -30,3 +30,23 @@ Argument list for the add command:
 
 # Statistics output
 `sudo ./xdp_stats --dev device_name`
+
+
+# Build
+## Packages on Debian/Ubuntu
+On Debian and Ubuntu installations, install the dependencies like this:
+```
+sudo apt install clang llvm libelf-dev libpcap-dev gcc-multilib build-essential
+```
+To install the ‘perf’ utility, run this on Debian:
+```
+sudo apt install linux-perf
+```
+or this on Ubuntu:
+```
+sudo apt install linux-tools-$(uname -r)
+```
+Build:
+```
+make
+```
