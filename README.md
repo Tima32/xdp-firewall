@@ -37,9 +37,8 @@ sudo xdp-firewall add enp4s0 --proto tcp --ip_src 192.168.0.5
 * Block TCP traffic in the range from 192.168.0.0 to 192.168.255.255.
 ```
 sudo xdp-firewall diap enp4s0 --proto tcp --ip_src_begin 192.168.0.0 --ip_src_end 192.168.255.255
-
-# Statistics output
 ```
+# Statistics output
 sudo ./xdp_stats --dev device_name
 ```
 
