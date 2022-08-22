@@ -19,6 +19,7 @@ static void PrintHelp()
 		"	start [device name] Enable filtering for the specified network device.\n"
 		"	stop  [device name] Disaable filtering for the specified network device.\n"
 		"	add   [device name] [command arguments add] Adds a new filter.\n"
+		"	diap  [device name] [command arguments add] Adds a new diapason filter.\n"
 		"	clear [device name] Clears the list of arguments.\n"
 		"\n"
 		"Each of the arguments to the add command is optional, but there must be at least one.\n"
@@ -160,6 +161,7 @@ static void CommandStop(ArgumentParser& ap)
 	}
 }
 extern void CommandAdd(ArgumentParser& ap);
+extern void CommandDiap(ArgumentParser& ap);
 extern void CommandClear(ArgumentParser& ap);
 
 int main(int argc, const char **argv)
@@ -191,6 +193,13 @@ int main(int argc, const char **argv)
 		CommandAdd(ap);
 		return 0;
 	}
+
+	else if (ap[1] == "diap")
+	{
+		CommandDiap(ap);
+		return 0;
+	}
+
 
 	else if (ap[1] == "clear")
 	{

@@ -9,6 +9,7 @@ Usage: xdp-firewall [command] ...
 * `*start` [device name] Enable filtering for the specified network device.
 * `stop` [device name] Disaable filtering for the specified network device.
 * `add` [device name] [command arguments add] Adds a new filter.
+* `diap` [device name] [command arguments diap] Adds a new diapason filter.
 * `clear` [device name] Clears the list of arguments.
 
 Each of the arguments to the add command is optional, but there must be at least one.
@@ -33,6 +34,9 @@ sudo xdp-firewall add enp4s0 --proto icmp
 ```
 sudo xdp-firewall add enp4s0 --proto tcp --ip_src 192.168.0.5
 ```
+* Block TCP traffic in the range from 192.168.0.0 to 192.168.255.255.
+```
+sudo xdp-firewall diap enp4s0 --proto tcp --ip_src_begin 192.168.0.0 --ip_src_end 192.168.255.255
 
 # Statistics output
 ```
