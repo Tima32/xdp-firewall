@@ -22,14 +22,22 @@ Argument list for the add command:
 # Examples
 
 * Start filtering:
-`sudo xdp-firewall start enp4s0`
+```
+sudo xdp-firewall start enp4s0
+```
 * Blocking ICMP:
-`sudo xdp-firewall add enp4s0 --proto icmp`
+```
+sudo xdp-firewall add enp4s0 --proto icmp
+```
 * Blocking TCP traffic only from 192.168.0.5.
-`sudo xdp-firewall add enp4s0 --proto tcp --ip_src 192.168.0.5`
+```
+sudo xdp-firewall add enp4s0 --proto tcp --ip_src 192.168.0.5
+```
 
 # Statistics output
-`sudo ./xdp_stats --dev device_name`
+```
+sudo ./xdp_stats --dev device_name
+```
 
 
 # Build
