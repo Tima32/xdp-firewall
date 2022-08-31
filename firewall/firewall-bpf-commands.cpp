@@ -2,7 +2,6 @@
  
 #include <iostream>
 #include "ArgumentParser.hpp"
-#include "firewall-filters.hpp"
 
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
@@ -427,7 +426,7 @@ void CommandClear(ArgumentParser& ap)
 
 	for (size_t pos = 0; pos < 256; pos++)
 	{
-		Filters::Filter f;
+		Filter f;
 		if ((bpf_map_update_elem(fd, &pos, &f, BPF_ANY)) != 0) {
 				fprintf(stderr,
 					"ERR: bpf_map_lookup_elem failed pos:0x%X\n", pos);

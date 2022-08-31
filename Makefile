@@ -70,7 +70,7 @@ xdp_stats: $(OBJECT_LIBBPF)
 	 $< $(LIBS)
 
 # Firewall
-FIREWALL_SOURCES=firewall/firewall-main.cpp firewall/firewall-filters.cpp firewall/firewall-bpf-commands.cpp
+FIREWALL_SOURCES=firewall/firewall-main.cpp firewall/firewall-bpf-commands.cpp
 
 FIREWALL_CPPFLAGS=-I./ArgumentParserLib -I./common
 FIREWALL_OBJECTS=$(patsubst %.cpp,%.o,$(FIREWALL_SOURCES))
