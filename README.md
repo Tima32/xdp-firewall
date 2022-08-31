@@ -39,6 +39,7 @@ sudo xdp-firewall add enp4s0 --proto tcp --ip-src 192.168.0.5
 sudo xdp-firewall diap enp4s0 --proto tcp --ip-src-begin 192.168.0.0 --ip-src-end 192.168.255.255
 ```
 # Statistics output
+```
 sudo ./xdp-stats --dev device-name
 ```
 
