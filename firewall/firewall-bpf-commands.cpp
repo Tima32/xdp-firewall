@@ -85,7 +85,7 @@ void CommandAdd(ArgumentParser& ap)
 
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_src");
+		auto str_ip = ap.get<string>("--ip-src");
 		ip_src = inet_addr(str_ip.c_str());
 		if (ip_src == INADDR_NONE)
 		{
@@ -97,7 +97,7 @@ void CommandAdd(ArgumentParser& ap)
 	{}
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_dst");
+		auto str_ip = ap.get<string>("--ip-dst");
 		ip_dst = inet_addr(str_ip.c_str());
 		if (ip_dst == INADDR_NONE)
 		{
@@ -110,14 +110,14 @@ void CommandAdd(ArgumentParser& ap)
 
 	try
 	{
-		port_src = ap.get<uint16_t>("--port_src");
+		port_src = ap.get<uint16_t>("--port-src");
 		port_src = ntohs(port_src);
 	}
 	catch(...)
 	{}
 	try
 	{
-		port_dst = ap.get<uint16_t>("--port_dst");
+		port_dst = ap.get<uint16_t>("--port-dst");
 		port_dst = ntohs(port_dst);
 	}
 	catch(...)
@@ -245,7 +245,7 @@ void CommandDiap(ArgumentParser& ap)
 	// Src
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_src_begin");
+		auto str_ip = ap.get<string>("--ip-src-begin");
 		ip_src_begin = inet_addr(str_ip.c_str());
 		if (ip_src_begin == INADDR_NONE)
 		{
@@ -257,7 +257,7 @@ void CommandDiap(ArgumentParser& ap)
 	{}
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_src_end");
+		auto str_ip = ap.get<string>("--ip-src-end");
 		ip_src_end = inet_addr(str_ip.c_str());
 		if (ip_src_end == INADDR_NONE)
 		{
@@ -271,7 +271,7 @@ void CommandDiap(ArgumentParser& ap)
 	// Dst
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_dst_begin");
+		auto str_ip = ap.get<string>("--ip-dst-begin");
 		ip_dst_begin = inet_addr(str_ip.c_str());
 		if (ip_dst_begin == INADDR_NONE)
 		{
@@ -283,7 +283,7 @@ void CommandDiap(ArgumentParser& ap)
 	{}
 	try
 	{
-		auto str_ip = ap.get<string>("--ip_dst_end");
+		auto str_ip = ap.get<string>("--ip-dst-end");
 		ip_dst_end = inet_addr(str_ip.c_str());
 		if (ip_dst_end == INADDR_NONE)
 		{
@@ -297,14 +297,14 @@ void CommandDiap(ArgumentParser& ap)
 	// Src
 	try
 	{
-		port_src_begin = ap.get<uint16_t>("--port_src_begin");
+		port_src_begin = ap.get<uint16_t>("--port-src-begin");
 		port_src_begin = ntohs(port_src_begin);
 	}
 	catch(...)
 	{}
 	try
 	{
-		port_src_end = ap.get<uint16_t>("--port_src_end");
+		port_src_end = ap.get<uint16_t>("--port-src-end");
 		port_src_end = ntohs(port_src_end);
 	}
 	catch(...)
@@ -313,14 +313,14 @@ void CommandDiap(ArgumentParser& ap)
 	// Dst
 	try
 	{
-		port_dst_begin = ap.get<uint16_t>("--port_dst_begin");
+		port_dst_begin = ap.get<uint16_t>("--port-dst-begin");
 		port_dst_begin = ntohs(port_dst_begin);
 	}
 	catch(...)
 	{}
 	try
 	{
-		port_dst_end = ap.get<uint16_t>("--port_dst_end");
+		port_dst_end = ap.get<uint16_t>("--port-dst-end");
 		port_dst_end = ntohs(port_dst_end);
 	}
 	catch(...)

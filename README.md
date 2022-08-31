@@ -6,7 +6,7 @@ A stateless firewall that attaches to the [XDP](https://www.iovisor.org/technolo
 # Filtration commands
 
 Usage: xdp-firewall [command] ...
-* `*start` [device name] Enable filtering for the specified network device.
+* `start` [device name] Enable filtering for the specified network device.
 * `stop` [device name] Disaable filtering for the specified network device.
 * `add` [device name] [command arguments add] Adds a new filter.
 * `diap` [device name] [command arguments diap] Adds a new diapason filter.
@@ -15,10 +15,10 @@ Usage: xdp-firewall [command] ...
 Each of the arguments to the add command is optional, but there must be at least one.
 Argument list for the add command:
 * `--proto` [name] Set the protocol name. Supported ICMP, TCP, UDP.
-* `--ip_src` [ip] Set the source ip.
-* `--ip_dst` [ip] Set the destination ip.
-* `--port_src` [port] Set the source port.
-* `--port_dst` [port] Set the destination port.
+* `--ip-src` [ip] Set the source ip.
+* `--ip-dst` [ip] Set the destination ip.
+* `--port-src` [port] Set the source port.
+* `--port-dst` [port] Set the destination port.
 
 # Examples
 
@@ -32,14 +32,14 @@ sudo xdp-firewall add enp4s0 --proto icmp
 ```
 * Blocking TCP traffic only from 192.168.0.5.
 ```
-sudo xdp-firewall add enp4s0 --proto tcp --ip_src 192.168.0.5
+sudo xdp-firewall add enp4s0 --proto tcp --ip-src 192.168.0.5
 ```
 * Block TCP traffic in the range from 192.168.0.0 to 192.168.255.255.
 ```
-sudo xdp-firewall diap enp4s0 --proto tcp --ip_src_begin 192.168.0.0 --ip_src_end 192.168.255.255
+sudo xdp-firewall diap enp4s0 --proto tcp --ip-src-begin 192.168.0.0 --ip-src-end 192.168.255.255
 ```
 # Statistics output
-sudo ./xdp_stats --dev device_name
+sudo ./xdp-stats --dev device-name
 ```
 
 
